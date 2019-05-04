@@ -313,9 +313,13 @@ main()
 #ifdef TUNED
         tuned_STREAM_Copy();
 #else
+#if _MSC_VER
+	memcpy(c, a, sizeof(c[0]) * STREAM_ARRAY_SIZE);
+#else
 #pragma omp parallel for
 	for (j=0; j<STREAM_ARRAY_SIZE; j++)
 	    c[j] = a[j];
+#endif
 #endif
 	times[0][k] = mysecond() - times[0][k];
 	
