@@ -91,7 +91,7 @@
  *          per array.
  */
 #ifndef STREAM_ARRAY_SIZE
-#   define STREAM_ARRAY_SIZE	10000000
+#   define STREAM_ARRAY_SIZE  200000000
 #endif
 
 /*  2) STREAM runs each kernel "NTIMES" times and reports the *best* result
@@ -176,9 +176,7 @@
 #define STREAM_TYPE double
 #endif
 
-static STREAM_TYPE	a[STREAM_ARRAY_SIZE+OFFSET],
-			b[STREAM_ARRAY_SIZE+OFFSET],
-			c[STREAM_ARRAY_SIZE+OFFSET];
+static STREAM_TYPE *a, *b, *c;
 
 static double	avgtime[4] = {0}, maxtime[4] = {0},
 		mintime[4] = {FLT_MAX,FLT_MAX,FLT_MAX,FLT_MAX};
@@ -262,6 +260,11 @@ main()
 		k++;
     printf ("Number of Threads counted = %i\n",k);
 #endif
+
+  /* Allocate memory */
+    a = malloc(sizeof(STREAM_TYPE) * (STREAM_ARRAY_SIZE+OFFSET));
+    b = malloc(sizeof(STREAM_TYPE) * (STREAM_ARRAY_SIZE+OFFSET));
+    c = malloc(sizeof(STREAM_TYPE) * (STREAM_ARRAY_SIZE+OFFSET));
 
     /* Get initial value for system clock. */
 #pragma omp parallel for
@@ -375,6 +378,10 @@ main()
     checkSTREAMresults();
     printf(HLINE);
 
+    free(a);
+    free(b);
+    free(c);
+
     return 0;
 }
 
@@ -476,7 +483,7 @@ void checkSTREAMresults ()
 		epsilon = 1.e-13;
 	}
 	else {
-		printf("WEIRD: sizeof(STREAM_TYPE) = %lu\n",sizeof(STREAM_TYPE));
+		printf("WEIRD: sizeof(STREAM_TYPE) = %zu\n",sizeof(STREAM_TYPE));
 		epsilon = 1.e-6;
 	}
 
